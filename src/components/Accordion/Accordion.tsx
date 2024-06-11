@@ -1,9 +1,11 @@
 import { createContext, ReactNode, useContext, useState } from "react";
+import { AccordionItem } from "./AccordionItem";
+import { AccordionTitle } from "./AccordionTitle";
+import { AccordionContent } from "./AccordionContent";
 
 type AccordionContextType = {
   openItemId: null | string;
-  openItem: (id: string) => void;
-  closeItem: () => void;
+  toggleItem: (id: string) => void;
 };
 
 const AccordionContext = createContext<AccordionContextType | null>(null);
@@ -13,27 +15,30 @@ export function useAccordionContext() {
   const ctx = useContext(AccordionContext);
 
   if (!ctx) {
-    throw new Error("Accordion related components must be wrapped by <Accordion>");
+    throw new Error(
+      "Accordion related components must be wrapped by <Accordion>"
+    );
   }
 
   return ctx;
 }
 
-export function Accordion({ children, className }: { children: ReactNode; className: string }) {
+export function Accordion({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className: string;
+}) {
   const [openItemId, setOpenItemId] = useState<null | string>(null);
 
-  function openItem(id: string) {
-    setOpenItemId(id);
-  }
-
-  function closeItem() {
-    setOpenItemId(null);
+  function toggleItem(id: string) {
+    setOpenItemId((prevId) => prevId === id ? null : id);
   }
 
   const contextValue = {
     openItemId,
-    openItem,
-    closeItem,
+    toggleItem
   };
 
   return (
@@ -42,3 +47,7 @@ export function Accordion({ children, className }: { children: ReactNode; classN
     </AccordionContext.Provider>
   );
 }
+
+Accordion.Item = AccordionItem;
+Accordion.Title = AccordionTitle;
+Accordion.Content = AccordionContent;
